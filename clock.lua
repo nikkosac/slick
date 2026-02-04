@@ -92,11 +92,11 @@ function Clock.new(options)
 	if Clock.images == nil then
 		---@type ClockImages
 		Clock.images = {
-			clock = love.graphics.newImage("assets/clock.png"),
-			hour = love.graphics.newImage("assets/hour.png"),
-			minute = love.graphics.newImage("assets/minute.png"),
-			seconds = love.graphics.newImage("assets/seconds.png"),
-			timePick = love.graphics.newImage("assets/time_pick.png"),
+			clock = love.graphics.newImage("assets/clock/clock.png"),
+			hour = love.graphics.newImage("assets/clock/hour.png"),
+			minute = love.graphics.newImage("assets/clock/minute.png"),
+			seconds = love.graphics.newImage("assets/clock/seconds.png"),
+			timePick = love.graphics.newImage("assets/clock/time_pick.png"),
 		}
 	end
 	self.images = Clock.images
