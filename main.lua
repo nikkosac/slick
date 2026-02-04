@@ -3,6 +3,11 @@ local Clock = require("clock")
 ---@type InteractableObjectManager
 local InteractableObjectManager = require("interactable_object_manager")
 
+---@type InteractableObjectManager|nil
+local objectManager
+---@type Clock[]|nil
+local clocks
+
 function love.load()
 	love.graphics.setBackgroundColor(0.05, 0.08, 0.2, 1)
 	---@type InteractableObjectManager
