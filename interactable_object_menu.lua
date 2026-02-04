@@ -1,6 +1,25 @@
+---@class InteractableObjectMenuOptions
+---@field boxSize? number
+---@field spacing? number
+---@field marginLeft? number
+---@field marginBottom? number
+---@field previewScale? number
+---@field cornerRadius? number
+
+---@class InteractableObjectMenu
+---@field objects InteractableObject[]
+---@field boxSize number
+---@field spacing number
+---@field marginLeft number
+---@field marginBottom number
+---@field previewScale number
+---@field cornerRadius number
 local InteractableObjectMenu = {}
 InteractableObjectMenu.__index = InteractableObjectMenu
 
+---@param objects InteractableObject[]|nil
+---@param options InteractableObjectMenuOptions|nil
+---@return InteractableObjectMenu
 function InteractableObjectMenu.new(objects, options)
 	local settings = options or {}
 	local self = setmetatable({}, InteractableObjectMenu)
@@ -14,6 +33,7 @@ function InteractableObjectMenu.new(objects, options)
 	return self
 end
 
+---@return number|nil, number|nil, number|nil, number|nil
 function InteractableObjectMenu:getBounds()
 	local count = #self.objects
 	if count == 0 then
@@ -28,6 +48,9 @@ function InteractableObjectMenu:getBounds()
 	return x, y, width, height
 end
 
+---@param x number
+---@param y number
+---@return boolean
 function InteractableObjectMenu:containsPoint(x, y)
 	local boundsX, boundsY, width, height = self:getBounds()
 	if boundsX == nil then
@@ -37,6 +60,9 @@ function InteractableObjectMenu:containsPoint(x, y)
 		and y >= boundsY and y <= boundsY + height
 end
 
+---@param x number
+---@param y number
+---@return InteractableObject|nil
 function InteractableObjectMenu:getObjectAtPoint(x, y)
 	local count = #self.objects
 	if count == 0 then
@@ -61,6 +87,7 @@ function InteractableObjectMenu:getObjectAtPoint(x, y)
 	return self.objects[index]
 end
 
+---@param activeObject InteractableObject|nil
 function InteractableObjectMenu:draw(activeObject)
 	local count = #self.objects
 	if count == 0 then

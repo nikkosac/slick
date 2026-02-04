@@ -1,10 +1,17 @@
+---@type Clock
 local Clock = require("clock")
+---@type InteractableObjectManager
 local InteractableObjectManager = require("interactable_object_manager")
+
 function love.load()
 	love.graphics.setBackgroundColor(0.05, 0.08, 0.2, 1)
+	---@type InteractableObjectManager
 	objectManager = InteractableObjectManager.new()
+	---@type number
 	local centerX = love.graphics.getWidth() / 2
+	---@type number
 	local centerY = love.graphics.getHeight() / 2
+	---@type Clock[]
 	clocks = {
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
@@ -20,11 +27,14 @@ function love.load()
 	end
 end
 
+---@param dt number
 function love.update(dt)
 	objectManager:updateAll(dt)
 end
 
+---@param key string
 function love.keypressed(key)
+	---@type InteractableObject|nil
 	local active = objectManager:getActive()
 	if active == nil then
 		return
@@ -44,11 +54,19 @@ function love.draw()
 	objectManager:draw()
 end
 
+---@param x number
+---@param y number
+---@param button number
+---@param isTouch boolean
+---@param presses number
 function love.mousepressed(x, y, button, isTouch, presses)
 	objectManager:onClick(x, y, button, isTouch, presses)
 end
 
+---@param dx number
+---@param dy number
 function love.wheelmoved(dx, dy)
+---@type number, number
 	local mouseX, mouseY = love.mouse.getPosition()
 	objectManager:onScroll(dx, dy, mouseX, mouseY)
 end
