@@ -27,3 +27,10 @@
 ---@field radius number
 ---@field speed number
 ---@field health number
+---@field damage number
+
+---@class Castle
+---@field pos Vec2
+---@field size number
+---@field health number
+---@field maxHealth number

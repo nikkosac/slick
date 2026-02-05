@@ -7,6 +7,7 @@ local cellMath = require("cell_math")
 ---@field speed number
 ---@field health number
 ---@field maxHealth number
+---@field damage number
 ---@field t number
 local Mob = {}
 Mob.__index = Mob
@@ -19,6 +20,7 @@ function Mob.new(config)
     speed = config.speed,
     health = config.health,
     maxHealth = config.health,
+    damage = config.damage or 1,
     t = 0,
   }, Mob)
 end

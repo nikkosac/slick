@@ -16,7 +16,7 @@ local InteractableObjectManager = require("interactable_object_manager")
 local PathMath = require("path_math")
 
 ---@type GameState
-local state = GameState.new()
+local state
 
 ---@type InteractableObjectManager
 local objectManager
@@ -31,6 +31,18 @@ function love.load()
   love.graphics.setBackgroundColor(0.2, 0.13, 0.07, 1)
   ---@type integer
   local numCellsY = 20
+  ---@type Path
+  local path = {
+    { x = 0, y = 0 },
+    { x = 12, y = 0 },
+    { x = 12, y = 10 },
+    { x = 3, y = 10 },
+    { x = 3, y = 15 },
+    { x = 15, y = 15 },
+    { x = 15, y = 19 },
+    { x = 26, y = 19 },
+  }
+  state = GameState.new({ path = path })
   ---@type number
   state.width, state.height = love.graphics.getDimensions()
   state.gridWidth = state.width * 12 / 16
@@ -47,18 +59,6 @@ function love.load()
     cellSize = cellSize,
   }
 
-  ---@type Path
-  state.path = {
-    { x = 0, y = 0 },
-    { x = 12, y = 0 },
-    { x = 12, y = 10 },
-    { x = 3, y = 10 },
-    { x = 3, y = 15 },
-    { x = 15, y = 15 },
-    { x = 15, y = 19 },
-    { x = 19, y = 19 },
-  }
-
   state.towers = {}
   state:addTower(Tower.new({ pos = { x = 10, y = 5 }, range = 4, cooldown = 0.75 }))
   state:addTower(Tower.new({ pos = { x = 15, y = 5 }, range = 4, cooldown = 0.75 }))
@@ -69,18 +69,18 @@ function love.load()
   state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
 
   state.mobs = {}
-  state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200 }))
-  state:addMob(Mob.new({ radius = 0.50, speed = 0.02, health = 50 }))
-  state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200, damage = 50 }))
+  state:addMob(Mob.new({ radius = 0.50, speed = 0.020, health = 50, damage = 20 }))
+  state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25, damage = 20 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1, damage = 10 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1, damage = 10 }))
 
   objectManager = InteractableObjectManager.new()
   menuManager = MenuManager.new(objectManager, state)
