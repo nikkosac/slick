@@ -9,12 +9,16 @@ local cellMath = require("cell_math")
 ---@field maxHealth number
 ---@field damage number
 ---@field t number
+---@field spawnTime number
+---@field spawnRemaining number
+---@field spawned boolean
 local Mob = {}
 Mob.__index = Mob
 
 ---@param config MobConfig
 ---@return Mob
 function Mob.new(config)
+  local spawnTime = config.spawnTime or 0
   return setmetatable({
     radius = config.radius,
     speed = config.speed,
@@ -22,13 +26,31 @@ function Mob.new(config)
     maxHealth = config.health,
     damage = config.damage or 1,
     t = 0,
+    spawnTime = spawnTime,
+    spawnRemaining = spawnTime,
+    spawned = spawnTime <= 0,
   }, Mob)
 end
 
 ---@param self Mob
 ---@param dt number
 function Mob:update(dt)
-  self.t = self.t + self.speed * dt
+  local movementDt = dt
+  if not self.spawned then
+    local remaining = self.spawnRemaining - dt
+    if remaining > 0 then
+      self.spawnRemaining = remaining
+      movementDt = 0
+    else
+      self.spawnRemaining = 0
+      self.spawned = true
+      movementDt = -remaining
+    end
+  end
+
+  if movementDt > 0 then
+    self.t = self.t + self.speed * movementDt
+  end
 
   -- Clamp t and health
   self.t = math.min(self.t, 1)
@@ -46,6 +68,9 @@ end
 ---@param path Path
 ---@param grid Grid
 function Mob:draw(path, grid)
+  if not self.spawned then
+    return
+  end
   local cellSize = grid.cellSize
   local radius = self.radius * cellSize
   love.graphics.setColor(1, 0, 0)

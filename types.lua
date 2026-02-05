@@ -28,6 +28,7 @@
 ---@field speed number
 ---@field health number
 ---@field damage number
+---@field spawnTime number
 
 ---@class Castle
 ---@field pos Vec2

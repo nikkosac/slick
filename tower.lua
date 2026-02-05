@@ -37,13 +37,15 @@ function Tower:update(dt, mobs, path)
   local target
   local targetDx, targetDy, targetDistSq
   for _, mob in ipairs(mobs) do
-    local mx, my = mob:getPosition(path)
-    local dx = mx - self.pos.x
-    local dy = my - self.pos.y
-    local distSq = dx * dx + dy * dy
-    if distSq <= rangeSq and (not target or mob.t > target.t) then
-      target = mob
-      targetDx, targetDy, targetDistSq = dx, dy, distSq
+    if mob.spawned then
+      local mx, my = mob:getPosition(path)
+      local dx = mx - self.pos.x
+      local dy = my - self.pos.y
+      local distSq = dx * dx + dy * dy
+      if distSq <= rangeSq and (not target or mob.t > target.t) then
+        target = mob
+        targetDx, targetDy, targetDistSq = dx, dy, distSq
+      end
     end
   end
 
@@ -76,15 +78,17 @@ function Tower:update(dt, mobs, path)
 
     local hit = false
     for _, mob in ipairs(mobs) do
-      local mx, my = mob:getPosition(path)
-      local dx = b.pos.x - mx
-      local dy = b.pos.y - my
-      local radius = b.radius + mob.radius
-      if dx * dx + dy * dy <= radius * radius then
-        mob.health = mob.health - b.damage
-        table.remove(self.bullets, i)
-        hit = true
-        break
+      if mob.spawned then
+        local mx, my = mob:getPosition(path)
+        local dx = b.pos.x - mx
+        local dy = b.pos.y - my
+        local radius = b.radius + mob.radius
+        if dx * dx + dy * dy <= radius * radius then
+          mob.health = mob.health - b.damage
+          table.remove(self.bullets, i)
+          hit = true
+          break
+        end
       end
     end
 

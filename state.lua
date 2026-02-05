@@ -86,13 +86,15 @@ function GameState:update(dt)
   for i = #mobs, 1, -1 do
     local mob = mobs[i]
     mob:update(dt)
-    if mob.health <= 0 then
-      table.remove(mobs, i)
-    elseif mob.t >= 1 then
-      if castle then
-        castle.health = math.max(0, castle.health - mob.damage)
+    if mob.spawned then
+      if mob.health <= 0 then
+        table.remove(mobs, i)
+      elseif mob.t >= 1 then
+        if castle then
+          castle.health = math.max(0, castle.health - mob.damage)
+        end
+        table.remove(mobs, i)
       end
-      table.remove(mobs, i)
     end
   end
 end
