@@ -12,6 +12,8 @@ local TileMenu = require("tile_menu")
 local Clock = require("clock")
 ---@type InteractableObjectManager
 local InteractableObjectManager = require("interactable_object_manager")
+---@type PathMath
+local PathMath = require("path_math")
 
 ---@type GameState
 local state = GameState.new()
@@ -153,67 +155,6 @@ local function isMenuClick(x, y)
   return x >= state.gridWidth and y >= 0 and y <= state.height
 end
 
----@param value number
----@return number
-local function sign(value)
-  if value > 0 then
-    return 1
-  elseif value < 0 then
-    return -1
-  end
-  return 0
-end
-
----@param cellX number
----@param cellY number
----@param x1 number
----@param y1 number
----@param x2 number
----@param y2 number
----@return boolean
-local function isTileOnSegment(cellX, cellY, x1, y1, x2, y2)
-  if x1 == x2 then
-    local minY = math.min(y1, y2)
-    local maxY = math.max(y1, y2)
-    return cellX == x1 and cellY >= minY and cellY <= maxY
-  end
-  if y1 == y2 then
-    local minX = math.min(x1, x2)
-    local maxX = math.max(x1, x2)
-    return cellY == y1 and cellX >= minX and cellX <= maxX
-  end
-  local dx = x2 - x1
-  local dy = y2 - y1
-  local stepX = sign(dx)
-  local stepY = sign(dy)
-  local steps = math.max(math.abs(dx), math.abs(dy))
-  local x = x1
-  local y = y1
-  for _ = 0, steps do
-    if cellX == x and cellY == y then
-      return true
-    end
-    x = x + stepX
-    y = y + stepY
-  end
-  return false
-end
-
----@param cellX number
----@param cellY number
----@return boolean
-local function isTileOnPath(cellX, cellY)
-  local path = state.path
-  for i = 1, #path - 1 do
-    local startNode = path[i]
-    local endNode = path[i + 1]
-    if isTileOnSegment(cellX, cellY, startNode.x, startNode.y, endNode.x, endNode.y) then
-      return true
-    end
-  end
-  return false
-end
-
 ---@param x number
 ---@param y number
 ---@param button number
@@ -231,7 +172,7 @@ function love.mousepressed(x, y, button, isTouch, presses)
     end
     local cellX = math.floor(x / cellSize)
     local cellY = math.floor(y / cellSize)
-    if isTileOnPath(cellX, cellY) then
+    if PathMath.isTileOnPath(state.path, cellX, cellY) then
       return
     end
     state.selectedTile = { x = cellX, y = cellY }
