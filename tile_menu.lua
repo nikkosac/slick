@@ -8,16 +8,18 @@
 ---@field bgColorB number
 ---@field bgColorA number
 ---@field menuManager MenuManager
+---@field state GameState
 local TileMenu = {}
 TileMenu.__index = TileMenu
 
 ---@param menuManager MenuManager
+---@param state GameState
 ---@param minX number
 ---@param maxX number
 ---@param minY number
 ---@param maxY number
 ---@return TileMenu
-function TileMenu.new(menuManager, minX, maxX, minY, maxY)
+function TileMenu.new(menuManager, state, minX, maxX, minY, maxY)
 	local self = setmetatable({}, TileMenu)
 	self.minX = minX
 	self.maxX = maxX
@@ -28,6 +30,7 @@ function TileMenu.new(menuManager, minX, maxX, minY, maxY)
 	self.bgColorB = 0.2
 	self.bgColorA = 1
 	self.menuManager = menuManager
+	self.state = state
 	return self
 end
 

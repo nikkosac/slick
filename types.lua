@@ -18,6 +18,12 @@
 ---@field path Path
 ---@field towers Tower[]
 ---@field mobs Mob[]
+---@field cellSize number
+---@field gridWidth number
+---@field gridColorR number
+---@field gridColorG number
+---@field gridColorB number
+---@field gridColorA number
 
 ---@class Bullet
 ---@field pos Vec2
@@ -102,6 +108,7 @@
 ---@field panelColorA number
 ---@field objectManager InteractableObjectManager
 ---@field tileMenu TileMenu|nil
+---@field state GameState
 ---@field menuStartX number
 ---@field menuEndX number
 ---@field menuStartY number
@@ -119,3 +126,4 @@
 ---@field bgColorB number
 ---@field bgColorA number
 ---@field menuManager MenuManager
+---@field state GameState

@@ -1,9 +1,9 @@
----@type CellMath
-local cellMath = require("cell_math")
 ---@type Tower
 local Tower = require("tower")
 ---@type Mob
 local Mob = require("mob")
+---@type GameState
+local GameState = require("state")
 ---@type MenuManager
 local MenuManager = require("menu_manager")
 ---@type TileMenu
@@ -14,18 +14,7 @@ local Clock = require("clock")
 local InteractableObjectManager = require("interactable_object_manager")
 
 ---@type GameState
-local state = {
-	width = 0,
-	height = 0,
-	grid = {
-		numCellsX = 0,
-		numCellsY = 0,
-		cellSize = 0,
-	},
-	path = {},
-	towers = {},
-	mobs = {},
-}
+local state = GameState.new()
 
 ---@type InteractableObjectManager
 local objectManager
@@ -42,13 +31,14 @@ function love.load()
 	local numCellsY = 20
 	---@type number
 	state.width, state.height = love.graphics.getDimensions()
-	local gridWidth = state.width * 12 / 16
+	state.gridWidth = state.width * 12 / 16
 	local gridHeight = state.height
-	local gridAspect = gridWidth / gridHeight
+	local gridAspect = state.gridWidth / gridHeight
 	---@type integer
 	local numCellsX = math.floor((numCellsY * gridAspect) + 0.5)
 	---@type number
-	local cellSize = math.min(gridWidth / numCellsX, gridHeight / numCellsY)
+	local cellSize = math.min(state.gridWidth / numCellsX, gridHeight / numCellsY)
+	state.cellSize = cellSize
 	state.grid = {
 		numCellsX = numCellsX,
 		numCellsY = numCellsY,
@@ -67,41 +57,39 @@ function love.load()
 		{ x = 19, y = 19 },
 	}
 
-	state.towers = {
-		Tower.new({ pos = { x = 10, y = 5 }, range = 4, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 15, y = 5 }, range = 4, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 4, y = 12 }, range = 2, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 12, y = 14 }, range = 3, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 10, y = 14 }, range = 3, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 11, y = 16 }, range = 3, cooldown = 0.75 }),
-		Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }),
-	}
+	state.towers = {}
+	state:addTower(Tower.new({ pos = { x = 10, y = 5 }, range = 4, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 15, y = 5 }, range = 4, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 4, y = 12 }, range = 2, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 12, y = 14 }, range = 3, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 10, y = 14 }, range = 3, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 11, y = 16 }, range = 3, cooldown = 0.75 }))
+	state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
 
-	state.mobs = {
-		Mob.new({ radius = 0.75, speed = 0.015, health = 200 }),
-		Mob.new({ radius = 0.50, speed = 0.02, health = 50 }),
-		Mob.new({ radius = 0.50, speed = 0.025, health = 25 }),
-		Mob.new({ radius = 0.20, speed = 0.030, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.031, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.032, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.033, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.034, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.035, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.036, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.037, health = 1 }),
-		Mob.new({ radius = 0.20, speed = 0.038, health = 1 }),
-	}
+	state.mobs = {}
+	state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200 }))
+	state:addMob(Mob.new({ radius = 0.50, speed = 0.02, health = 50 }))
+	state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1 }))
+	state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1 }))
 
 	objectManager = InteractableObjectManager.new()
-	menuManager = MenuManager.new(objectManager)
+	menuManager = MenuManager.new(objectManager, state)
 	menuManager.menuStartX = 0
 	menuManager.menuEndX = 1
 	menuManager.menuStartY = 1 / 3
 	menuManager.menuEndY = 1
-	tileMenu = TileMenu.new(menuManager, 12 / 16, 1, 1 / 3, 1)
+	tileMenu = TileMenu.new(menuManager, state, 12 / 16, 1, 1 / 3, 1)
 	menuManager:setTileMenu(tileMenu)
 	---@type number
-	local centerX = gridWidth / 2
+	local centerX = state.gridWidth / 2
 	---@type number
 	local centerY = gridHeight / 2
 	---@type Clock[]
@@ -122,21 +110,7 @@ end
 
 ---@param dt number
 function love.update(dt)
-	local mobs = state.mobs
-	local towers = state.towers
-	local path = state.path
-
-	for _, tower in ipairs(towers) do
-		tower:update(dt, mobs, path)
-	end
-
-	for i, mob in ipairs(mobs) do
-		mob:update(dt)
-		if mob.t >= 1 or mob.health <= 0 then
-			table.remove(mobs, i)
-		end
-	end
-
+	state:update(dt)
 	objectManager:updateAll(dt)
 end
 
@@ -161,44 +135,9 @@ function love.keypressed(key)
 end
 
 function love.draw()
-	local grid = state.grid
-	local path = state.path
-	local towers = state.towers
-	local mobs = state.mobs
-	local cellSize = grid.cellSize
 	local width = state.width
 	local height = state.height
-	local gridWidth = width * 12 / 16
-	-- Grid background
-	love.graphics.setColor(0.05, 0.08, 0.2, 1)
-	love.graphics.rectangle("fill", 0, 0, gridWidth, height)
-	-- Grid lines
-	love.graphics.setLineWidth(1)
-	love.graphics.setColor(0.5, 0.5, 0.5)
-	for x = 0, grid.numCellsX - 1 do
-		for y = 0, grid.numCellsY - 1 do
-			love.graphics.rectangle("line", x * cellSize, y * cellSize, cellSize, cellSize)
-		end
-	end
-
-	-- Path
-	love.graphics.setLineWidth(1)
-	love.graphics.setColor(1, 1, 0)
-	for i = 1, #path - 1 do
-		local x1, y1 = cellMath.cellCenter(path[i].x, path[i].y, grid)
-		local x2, y2 = cellMath.cellCenter(path[i + 1].x, path[i + 1].y, grid)
-		love.graphics.line(x1, y1, x2, y2)
-	end
-
-	-- Towers
-	for _, tower in ipairs(towers) do
-		tower:draw(grid)
-	end
-
-	-- Mobs
-	for _, mob in ipairs(mobs) do
-		mob:draw(path, grid)
-	end
+	state:draw()
 	menuManager:draw()
 
 	-- Outline
@@ -211,8 +150,7 @@ end
 ---@param y number
 ---@return boolean
 local function isMenuClick(x, y)
-	local gridWidth = state.width * 12 / 16
-	return x >= gridWidth and y >= 0 and y <= state.height
+	return x >= state.gridWidth and y >= 0 and y <= state.height
 end
 
 ---@param x number

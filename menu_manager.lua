@@ -5,6 +5,7 @@
 ---@field panelColorA number
 ---@field objectManager InteractableObjectManager
 ---@field tileMenu TileMenu|nil
+---@field state GameState
 ---@field menuStartX number
 ---@field menuEndX number
 ---@field menuStartY number
@@ -15,12 +16,14 @@ local MenuManager = {}
 MenuManager.__index = MenuManager
 
 ---@param objectManager InteractableObjectManager
+---@param state GameState
 ---@param options table|nil
 ---@return MenuManager
-function MenuManager.new(objectManager, options)
+function MenuManager.new(objectManager, state, options)
 	local settings = options or {}
 	local self = setmetatable({}, MenuManager)
 	self.objectManager = objectManager
+	self.state = state
 	self.tileMenu = nil
 	self.panelColorR = 0.2
 	self.panelColorG = 0.13
