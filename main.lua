@@ -26,142 +26,142 @@ local tileMenu
 local clocks
 
 function love.load()
-	love.graphics.setBackgroundColor(0.2, 0.13, 0.07, 1)
-	---@type integer
-	local numCellsY = 20
-	---@type number
-	state.width, state.height = love.graphics.getDimensions()
-	state.gridWidth = state.width * 12 / 16
-	local gridHeight = state.height
-	local gridAspect = state.gridWidth / gridHeight
-	---@type integer
-	local numCellsX = math.floor((numCellsY * gridAspect) + 0.5)
-	---@type number
-	local cellSize = math.min(state.gridWidth / numCellsX, gridHeight / numCellsY)
-	state.cellSize = cellSize
-	state.grid = {
-		numCellsX = numCellsX,
-		numCellsY = numCellsY,
-		cellSize = cellSize,
-	}
+  love.graphics.setBackgroundColor(0.2, 0.13, 0.07, 1)
+  ---@type integer
+  local numCellsY = 20
+  ---@type number
+  state.width, state.height = love.graphics.getDimensions()
+  state.gridWidth = state.width * 12 / 16
+  local gridHeight = state.height
+  local gridAspect = state.gridWidth / gridHeight
+  ---@type integer
+  local numCellsX = math.floor((numCellsY * gridAspect) + 0.5)
+  ---@type number
+  local cellSize = math.min(state.gridWidth / numCellsX, gridHeight / numCellsY)
+  state.cellSize = cellSize
+  state.grid = {
+    numCellsX = numCellsX,
+    numCellsY = numCellsY,
+    cellSize = cellSize,
+  }
 
-	---@type Path
-	state.path = {
-		{ x = 0, y = 0 },
-		{ x = 12, y = 0 },
-		{ x = 12, y = 10 },
-		{ x = 3, y = 10 },
-		{ x = 3, y = 15 },
-		{ x = 15, y = 15 },
-		{ x = 15, y = 19 },
-		{ x = 19, y = 19 },
-	}
+  ---@type Path
+  state.path = {
+    { x = 0, y = 0 },
+    { x = 12, y = 0 },
+    { x = 12, y = 10 },
+    { x = 3, y = 10 },
+    { x = 3, y = 15 },
+    { x = 15, y = 15 },
+    { x = 15, y = 19 },
+    { x = 19, y = 19 },
+  }
 
-	state.towers = {}
-	state:addTower(Tower.new({ pos = { x = 10, y = 5 }, range = 4, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 15, y = 5 }, range = 4, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 4, y = 12 }, range = 2, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 12, y = 14 }, range = 3, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 10, y = 14 }, range = 3, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 11, y = 16 }, range = 3, cooldown = 0.75 }))
-	state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
+  state.towers = {}
+  state:addTower(Tower.new({ pos = { x = 10, y = 5 }, range = 4, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 15, y = 5 }, range = 4, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 4, y = 12 }, range = 2, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 12, y = 14 }, range = 3, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 10, y = 14 }, range = 3, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 11, y = 16 }, range = 3, cooldown = 0.75 }))
+  state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
 
-	state.mobs = {}
-	state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200 }))
-	state:addMob(Mob.new({ radius = 0.50, speed = 0.02, health = 50 }))
-	state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1 }))
-	state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1 }))
+  state.mobs = {}
+  state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200 }))
+  state:addMob(Mob.new({ radius = 0.50, speed = 0.02, health = 50 }))
+  state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1 }))
+  state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1 }))
 
-	objectManager = InteractableObjectManager.new()
-	menuManager = MenuManager.new(objectManager, state)
-	menuManager.menuStartX = 0
-	menuManager.menuEndX = 1
-	menuManager.menuStartY = 1 / 3
-	menuManager.menuEndY = 1
-	tileMenu = TileMenu.new(menuManager, state, 12 / 16, 1, 1 / 3, 1)
-	menuManager:setTileMenu(tileMenu)
-	---@type number
-	local centerX = state.gridWidth / 2
-	---@type number
-	local centerY = gridHeight / 2
-	---@type Clock[]
-	clocks = {
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-	}
-	clocks[1]:setTime(1, 0, 0)
-	clocks[2]:setTime(4, 30, 0)
-	clocks[3]:setTime(9, 15, 0)
-	clocks[4]:setTime(11, 45, 0)
-	for _, clock in ipairs(clocks) do
-		objectManager:add(clock)
-	end
+  objectManager = InteractableObjectManager.new()
+  menuManager = MenuManager.new(objectManager, state)
+  menuManager.menuStartX = 0
+  menuManager.menuEndX = 1
+  menuManager.menuStartY = 1 / 3
+  menuManager.menuEndY = 1
+  tileMenu = TileMenu.new(menuManager, state, 12 / 16, 1, 1 / 3, 1)
+  menuManager:setTileMenu(tileMenu)
+  ---@type number
+  local centerX = state.gridWidth / 2
+  ---@type number
+  local centerY = gridHeight / 2
+  ---@type Clock[]
+  clocks = {
+    Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
+    Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
+    Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
+    Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
+  }
+  clocks[1]:setTime(1, 0, 0)
+  clocks[2]:setTime(4, 30, 0)
+  clocks[3]:setTime(9, 15, 0)
+  clocks[4]:setTime(11, 45, 0)
+  for _, clock in ipairs(clocks) do
+    objectManager:add(clock)
+  end
 end
 
 ---@param dt number
 function love.update(dt)
-	state:update(dt)
-	objectManager:updateAll(dt)
+  state:update(dt)
+  objectManager:updateAll(dt)
 end
 
 ---@param key string
 function love.keypressed(key)
-	if key == "escape" then
-		love.event.quit()
-		return
-	end
-	---@type InteractableObject|nil
-	local active = objectManager:getActive()
-	if active == nil then
-		return
-	end
-	if key == "f" and active.setTime then
-		active:setTime(3, 24, 0)
-	elseif key == "q" and active.incrementTimeScale then
-		active:incrementTimeScale(-1)
-	elseif key == "w" and active.incrementTimeScale then
-		active:incrementTimeScale(1)
-	end
+  if key == "escape" then
+    love.event.quit()
+    return
+  end
+  ---@type InteractableObject|nil
+  local active = objectManager:getActive()
+  if active == nil then
+    return
+  end
+  if key == "f" and active.setTime then
+    active:setTime(3, 24, 0)
+  elseif key == "q" and active.incrementTimeScale then
+    active:incrementTimeScale(-1)
+  elseif key == "w" and active.incrementTimeScale then
+    active:incrementTimeScale(1)
+  end
 end
 
 function love.draw()
-	local width = state.width
-	local height = state.height
-	state:draw()
-	menuManager:draw()
+  local width = state.width
+  local height = state.height
+  state:draw()
+  menuManager:draw()
 
-	-- Outline
-	love.graphics.setLineWidth(2)
-	love.graphics.setColor(1, 1, 1)
-	love.graphics.rectangle("line", 0, 0, width, height)
+  -- Outline
+  love.graphics.setLineWidth(2)
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.rectangle("line", 0, 0, width, height)
 end
 
 ---@param x number
 ---@param y number
 ---@return boolean
 local function isMenuClick(x, y)
-	return x >= state.gridWidth and y >= 0 and y <= state.height
+  return x >= state.gridWidth and y >= 0 and y <= state.height
 end
 
 ---@param value number
 ---@return number
 local function sign(value)
-	if value > 0 then
-		return 1
-	elseif value < 0 then
-		return -1
-	end
-	return 0
+  if value > 0 then
+    return 1
+  elseif value < 0 then
+    return -1
+  end
+  return 0
 end
 
 ---@param cellX number
@@ -172,46 +172,46 @@ end
 ---@param y2 number
 ---@return boolean
 local function isTileOnSegment(cellX, cellY, x1, y1, x2, y2)
-	if x1 == x2 then
-		local minY = math.min(y1, y2)
-		local maxY = math.max(y1, y2)
-		return cellX == x1 and cellY >= minY and cellY <= maxY
-	end
-	if y1 == y2 then
-		local minX = math.min(x1, x2)
-		local maxX = math.max(x1, x2)
-		return cellY == y1 and cellX >= minX and cellX <= maxX
-	end
-	local dx = x2 - x1
-	local dy = y2 - y1
-	local stepX = sign(dx)
-	local stepY = sign(dy)
-	local steps = math.max(math.abs(dx), math.abs(dy))
-	local x = x1
-	local y = y1
-	for _ = 0, steps do
-		if cellX == x and cellY == y then
-			return true
-		end
-		x = x + stepX
-		y = y + stepY
-	end
-	return false
+  if x1 == x2 then
+    local minY = math.min(y1, y2)
+    local maxY = math.max(y1, y2)
+    return cellX == x1 and cellY >= minY and cellY <= maxY
+  end
+  if y1 == y2 then
+    local minX = math.min(x1, x2)
+    local maxX = math.max(x1, x2)
+    return cellY == y1 and cellX >= minX and cellX <= maxX
+  end
+  local dx = x2 - x1
+  local dy = y2 - y1
+  local stepX = sign(dx)
+  local stepY = sign(dy)
+  local steps = math.max(math.abs(dx), math.abs(dy))
+  local x = x1
+  local y = y1
+  for _ = 0, steps do
+    if cellX == x and cellY == y then
+      return true
+    end
+    x = x + stepX
+    y = y + stepY
+  end
+  return false
 end
 
 ---@param cellX number
 ---@param cellY number
 ---@return boolean
 local function isTileOnPath(cellX, cellY)
-	local path = state.path
-	for i = 1, #path - 1 do
-		local startNode = path[i]
-		local endNode = path[i + 1]
-		if isTileOnSegment(cellX, cellY, startNode.x, startNode.y, endNode.x, endNode.y) then
-			return true
-		end
-	end
-	return false
+  local path = state.path
+  for i = 1, #path - 1 do
+    local startNode = path[i]
+    local endNode = path[i + 1]
+    if isTileOnSegment(cellX, cellY, startNode.x, startNode.y, endNode.x, endNode.y) then
+      return true
+    end
+  end
+  return false
 end
 
 ---@param x number
@@ -220,29 +220,29 @@ end
 ---@param isTouch boolean
 ---@param presses number
 function love.mousepressed(x, y, button, isTouch, presses)
-	if isMenuClick(x, y) then
-		menuManager:onClick(x, y, button, isTouch, presses)
-	else
-		local cellSize = state.grid.cellSize
-		local maxGridWidth = state.grid.numCellsX * cellSize
-		local maxGridHeight = state.grid.numCellsY * cellSize
-		if x < 0 or y < 0 or y > maxGridHeight or x > maxGridWidth then
-			return
-		end
-		local cellX = math.floor(x / cellSize)
-		local cellY = math.floor(y / cellSize)
-		if isTileOnPath(cellX, cellY) then
-			return
-		end
-		state.selectedTile = { x = cellX, y = cellY }
-		state.isTileSelected = true
-	end
+  if isMenuClick(x, y) then
+    menuManager:onClick(x, y, button, isTouch, presses)
+  else
+    local cellSize = state.grid.cellSize
+    local maxGridWidth = state.grid.numCellsX * cellSize
+    local maxGridHeight = state.grid.numCellsY * cellSize
+    if x < 0 or y < 0 or y > maxGridHeight or x > maxGridWidth then
+      return
+    end
+    local cellX = math.floor(x / cellSize)
+    local cellY = math.floor(y / cellSize)
+    if isTileOnPath(cellX, cellY) then
+      return
+    end
+    state.selectedTile = { x = cellX, y = cellY }
+    state.isTileSelected = true
+  end
 end
 
 ---@param dx number
 ---@param dy number
 function love.wheelmoved(dx, dy)
-	---@type number, number
-	local mouseX, mouseY = love.mouse.getPosition()
-	menuManager:onScroll(dx, dy, mouseX, mouseY)
+  ---@type number, number
+  local mouseX, mouseY = love.mouse.getPosition()
+  menuManager:onScroll(dx, dy, mouseX, mouseY)
 end
