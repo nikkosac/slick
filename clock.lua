@@ -233,8 +233,8 @@ end
 
 ---@param centerX number|nil
 ---@param centerY number|nil
-function Clock:draw(centerX, centerY)
-	if not InteractableObject.draw(self, centerX, centerY) then
+function Clock:drawActive(centerX, centerY)
+	if not InteractableObject.drawActive(self, centerX, centerY) then
 		return
 	end
 	local baseRadius = math.min(self.images.clock:getWidth(), self.images.clock:getHeight()) / 2
@@ -251,6 +251,42 @@ function Clock:draw(centerX, centerY)
 	local handPivotY = 0.49
 
 	drawCentered(self.images.timePick, drawCenterX + self.timePickOffsetX, drawCenterY, self.scale)
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.circle("fill", drawCenterX, drawCenterY, clockBlackRadius)
+	love.graphics.setColor(1, 0.9, 0.2, 1)
+	love.graphics.circle("fill", drawCenterX, drawCenterY, clockYellowRadius)
+	love.graphics.setColor(1, 1, 1, 1)
+
+	drawCentered(self.images.clock, drawCenterX, drawCenterY, self.scale)
+	drawPivot(self.images.hour, drawCenterX, drawCenterY, self.scale, hourAngle, handPivotX, handPivotY)
+	drawPivot(self.images.minute, drawCenterX, drawCenterY, self.scale, minuteAngle, handPivotX, handPivotY)
+	drawPivot(self.images.seconds, drawCenterX, drawCenterY, self.scale, secondAngle, handPivotX, handPivotY)
+end
+
+---@param centerX number|nil
+---@param centerY number|nil
+function Clock:drawMenu(centerX, centerY)
+	if not InteractableObject.drawMenu(self, centerX, centerY) then
+		return
+	end
+	local baseRadius = math.min(self.images.clock:getWidth(), self.images.clock:getHeight()) / 2
+	local clockBaseRadius = baseRadius * self.scale
+	local clockBlackRadius = clockBaseRadius * CLOCK_BLACK_RADIUS_SCALE
+	local clockYellowRadius = clockBaseRadius * CLOCK_YELLOW_RADIUS_SCALE
+	local drawCenterX = centerX or self.x
+	local drawCenterY = centerY or self.y
+	local twoPi = math.pi * 2
+	local menuSeconds = 0
+	local menuMinute = 0
+	local menuHour = 0
+	local secondAngle = (menuSeconds / 60) * twoPi
+	local minuteAngle = ((menuMinute + (menuSeconds / 60)) / 60) * twoPi
+	local hourAngle = ((menuHour + (menuMinute / 60) + (menuSeconds / 3600)) / 12) * twoPi
+	local handPivotX = 0.5
+	local handPivotY = 0.49
+	local menuTimePickOffsetX = 0
+
+	drawCentered(self.images.timePick, drawCenterX + menuTimePickOffsetX, drawCenterY, self.scale)
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.circle("fill", drawCenterX, drawCenterY, clockBlackRadius)
 	love.graphics.setColor(1, 0.9, 0.2, 1)

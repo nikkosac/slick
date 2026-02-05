@@ -5,7 +5,6 @@ local InteractableObjectMenu = require("interactable_object_menu")
 ---@field objects InteractableObject[]
 ---@field activeObject InteractableObject|nil
 ---@field menu InteractableObjectMenu|nil
----@field clickMessage string
 local InteractableObjectManager = {}
 InteractableObjectManager.__index = InteractableObjectManager
 
@@ -15,7 +14,6 @@ function InteractableObjectManager.new()
 	self.objects = {}
 	self.activeObject = nil
 	self.menu = InteractableObjectMenu.new(self.objects)
-	self.clickMessage = ""
 	return self
 end
 
@@ -48,11 +46,6 @@ function InteractableObjectManager:getActive()
 	return self.activeObject
 end
 
----@return string
-function InteractableObjectManager:getClickMessage()
-	return self.clickMessage
-end
-
 ---@param dt number
 function InteractableObjectManager:updateAll(dt)
 	for _, object in ipairs(self.objects) do
@@ -70,7 +63,7 @@ function InteractableObjectManager:drawActive(centerX, centerY)
 			return
 		end
 	end
-	self.activeObject:draw(centerX, centerY)
+	self.activeObject:drawActive(centerX, centerY)
 end
 
 function InteractableObjectManager:drawMenu()
@@ -98,7 +91,6 @@ function InteractableObjectManager:onClick(x, y, button, isTouch, presses)
 		if selected then
 			self:setActive(selected)
 		end
-		self.clickMessage = "menu section clicked"
 		return
 	end
 	local active = self.activeObject
@@ -111,10 +103,7 @@ function InteractableObjectManager:onClick(x, y, button, isTouch, presses)
 		end
 	end
 	if active.containsPoint and active:containsPoint(x, y) then
-		self.clickMessage = "interactable object section clicked"
 		active:onClick(x, y, button, isTouch, presses)
-	else
-		self.clickMessage = ""
 	end
 end
 

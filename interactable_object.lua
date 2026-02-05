@@ -50,7 +50,16 @@ end
 ---@param centerX number|nil
 ---@param centerY number|nil
 ---@return boolean
-function InteractableObject:draw(centerX, centerY)
+function InteractableObject:drawActive(centerX, centerY)
+	self.drawCenterX = centerX or self.x
+	self.drawCenterY = centerY or self.y
+	return true
+end
+
+---@param centerX number|nil
+---@param centerY number|nil
+---@return boolean
+function InteractableObject:drawMenu(centerX, centerY)
 	self.drawCenterX = centerX or self.x
 	self.drawCenterY = centerY or self.y
 	return true

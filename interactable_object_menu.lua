@@ -113,14 +113,14 @@ function InteractableObjectMenu:draw(activeObject)
 			love.graphics.setLineWidth(1)
 		end
 		love.graphics.rectangle("line", boxX, boxY, boxSize, boxSize, radius, radius)
-		if object and object.draw then
+		if object and object.drawMenu then
 			local originalScale = object.scale or 1
 			local originalOffset = object.timePickOffsetX
 			object.scale = originalScale * self.previewScale
 			if originalOffset ~= nil then
 				object.timePickOffsetX = originalOffset * self.previewScale
 			end
-			object:draw(boxX + boxSize / 2, boxY + boxSize / 2)
+			object:drawMenu(boxX + boxSize / 2, boxY + boxSize / 2)
 			object.scale = originalScale
 			if originalOffset ~= nil then
 				object.timePickOffsetX = originalOffset
