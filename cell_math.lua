@@ -7,7 +7,7 @@ local cellMath = {}
 ---@return number cx
 ---@return number cy
 function cellMath.cellCenter(x, y, grid)
-  return x * grid.cellWidth + grid.cellWidth / 2, y * grid.cellHeight + grid.cellHeight / 2
+  return x * grid.cellSize + grid.cellSize / 2, y * grid.cellSize + grid.cellSize / 2
 end
 
 return cellMath

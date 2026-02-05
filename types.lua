@@ -9,8 +9,7 @@
 ---@class Grid
 ---@field numCellsX integer
 ---@field numCellsY integer
----@field cellWidth number
----@field cellHeight number
+---@field cellSize number
 
 ---@class GameState
 ---@field width number

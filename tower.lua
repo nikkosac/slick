@@ -103,7 +103,7 @@ end
 ---@param self Tower
 ---@param grid Grid
 function Tower:draw(grid)
-  local cellSize = math.min(grid.cellWidth, grid.cellHeight)
+  local cellSize = grid.cellSize
   local radiusCells = 0.35
   local radius = radiusCells * cellSize
   local rangeRadius = self.range * cellSize

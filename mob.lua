@@ -44,7 +44,7 @@ end
 ---@param path Path
 ---@param grid Grid
 function Mob:draw(path, grid)
-  local cellSize = math.min(grid.cellWidth, grid.cellHeight)
+  local cellSize = grid.cellSize
   local radius = self.radius * cellSize
   love.graphics.setColor(1, 0, 0)
   local x, y = pathMath.interpolatedPosition(path, self.t)

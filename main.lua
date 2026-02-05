@@ -16,8 +16,7 @@ local state = {
 	grid = {
 		numCellsX = 0,
 		numCellsY = 0,
-		cellWidth = 0,
-		cellHeight = 0,
+		cellSize = 0,
 	},
 	path = {},
 	towers = {},
@@ -31,22 +30,21 @@ local clocks
 
 function love.load()
 	love.graphics.setBackgroundColor(0.2, 0.13, 0.07, 1)
-	---@type number
-	local width, height = love.graphics.getDimensions()
 	---@type integer
-	local numCellsX, numCellsY = 20, 20
-	local gridWidth = width * 12 / 16
-	local gridHeight = height
+	local numCellsY = 20
 	---@type number
-	local cellWidth, cellHeight = gridWidth / numCellsX, gridHeight / numCellsY
-
-	state.width = width
-	state.height = height
+	state.width, state.height = love.graphics.getDimensions()
+	local gridWidth = state.width * 12 / 16
+	local gridHeight = state.height
+	local gridAspect = gridWidth / gridHeight
+	---@type integer
+	local numCellsX = math.floor((numCellsY * gridAspect) + 0.5)
+	---@type number
+	local cellSize = math.min(gridWidth / numCellsX, gridHeight / numCellsY)
 	state.grid = {
 		numCellsX = numCellsX,
 		numCellsY = numCellsY,
-		cellWidth = cellWidth,
-		cellHeight = cellHeight,
+		cellSize = cellSize,
 	}
 
 	---@type Path
@@ -90,7 +88,7 @@ function love.load()
 	---@type number
 	local centerX = gridWidth / 2
 	---@type number
-	local centerY = height / 2
+	local centerY = gridHeight / 2
 	---@type Clock[]
 	clocks = {
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
@@ -156,8 +154,7 @@ function love.draw()
 	local path = state.path
 	local towers = state.towers
 	local mobs = state.mobs
-	local cellWidth = grid.cellWidth
-	local cellHeight = grid.cellHeight
+	local cellSize = grid.cellSize
 	local width = state.width
 	local height = state.height
 	local gridWidth = width * 12 / 16
@@ -172,14 +169,9 @@ function love.draw()
 	love.graphics.setColor(0.5, 0.5, 0.5)
 	for x = 0, grid.numCellsX - 1 do
 		for y = 0, grid.numCellsY - 1 do
-			love.graphics.rectangle("line", x * cellWidth, y * cellHeight, cellWidth, cellHeight)
+			love.graphics.rectangle("line", x * cellSize, y * cellSize, cellSize, cellSize)
 		end
 	end
-
-	-- Outline
-	love.graphics.setLineWidth(1)
-	love.graphics.setColor(1, 0, 0)
-	love.graphics.rectangle("line", 0, 0, gridWidth, height)
 
 	-- Path
 	love.graphics.setLineWidth(1)
@@ -203,6 +195,11 @@ function love.draw()
 	-- UI overlay
 	love.graphics.setColor(1, 1, 1, 1)
 	objectManager:draw()
+
+	-- Outline
+	love.graphics.setLineWidth(2)
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.rectangle("line", 0, 0, width, height)
 end
 
 ---@param x number
