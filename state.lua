@@ -11,6 +11,8 @@
 ---@field gridColorG number
 ---@field gridColorB number
 ---@field gridColorA number
+---@field selectedTile Vec2
+---@field isTileSelected boolean
 local GameState = {}
 GameState.__index = GameState
 
@@ -36,6 +38,8 @@ function GameState.new()
 	self.gridColorG = 0.08
 	self.gridColorB = 0.2
 	self.gridColorA = 1
+	self.selectedTile = { x = 0, y = 0 }
+	self.isTileSelected = false
 	return self
 end
 

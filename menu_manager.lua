@@ -10,8 +10,6 @@
 ---@field menuEndX number
 ---@field menuStartY number
 ---@field menuEndY number
----@field selectedTile Vec2
----@field isTileSelected boolean
 local MenuManager = {}
 MenuManager.__index = MenuManager
 
@@ -33,8 +31,6 @@ function MenuManager.new(objectManager, state, options)
 	self.menuEndX = settings.menuEndX or 1
 	self.menuStartY = settings.menuStartY or 0
 	self.menuEndY = settings.menuEndY or (2 / 3)
-	self.selectedTile = { x = 0, y = 0 }
-	self.isTileSelected = false
 	return self
 end
 
@@ -43,12 +39,6 @@ function MenuManager:setTileMenu(tileMenu)
 	self.tileMenu = tileMenu
 end
 
----@param x number
----@param y number
-function MenuManager:setSelectedTile(x, y)
-	self.selectedTile = { x = x, y = y }
-	self.isTileSelected = true
-end
 
 ---@param width number
 ---@param height number
@@ -81,7 +71,7 @@ function MenuManager:draw()
 	end
 	love.graphics.setColor(self.panelColorR, self.panelColorG, self.panelColorB, self.panelColorA)
 	love.graphics.rectangle("fill", gridWidth, 0, panelWidth, height)
-	if self.isTileSelected and self.tileMenu then
+	if self.state.isTileSelected and self.tileMenu then
 		self.tileMenu:draw()
 	else
 		self:applyMenuBounds(width, height)
@@ -95,7 +85,7 @@ end
 ---@param isTouch boolean
 ---@param presses number
 function MenuManager:onClick(x, y, button, isTouch, presses)
-	if self.isTileSelected and self.tileMenu then
+	if self.state.isTileSelected and self.tileMenu then
 		self.tileMenu:onClick(x, y, button, isTouch, presses)
 	else
 		self.objectManager:onClick(x, y, button, isTouch, presses)
@@ -107,7 +97,7 @@ end
 ---@param x number
 ---@param y number
 function MenuManager:onScroll(dx, dy, x, y)
-	if self.isTileSelected and self.tileMenu then
+	if self.state.isTileSelected and self.tileMenu then
 		self.tileMenu:onScroll(dx, dy, x, y)
 	else
 		self.objectManager:onScroll(dx, dy, x, y)

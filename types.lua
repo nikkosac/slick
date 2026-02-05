@@ -24,6 +24,8 @@
 ---@field gridColorG number
 ---@field gridColorB number
 ---@field gridColorA number
+---@field selectedTile Vec2
+---@field isTileSelected boolean
 
 ---@class Bullet
 ---@field pos Vec2
@@ -113,8 +115,6 @@
 ---@field menuEndX number
 ---@field menuStartY number
 ---@field menuEndY number
----@field selectedTile Vec2
----@field isTileSelected boolean
 
 ---@class TileMenu
 ---@field minX number
@@ -127,3 +127,16 @@
 ---@field bgColorA number
 ---@field menuManager MenuManager
 ---@field state GameState
+---@field buttons Button[]
+
+---@class Button
+---@field x number
+---@field y number
+---@field width number
+---@field height number
+---@field colorR number
+---@field colorG number
+---@field colorB number
+---@field colorA number
+---@field text string
+---@field onClickFn fun(button: Button, x: number, y: number)|nil
