@@ -15,6 +15,32 @@ local InteractableObjectManager = require("interactable_object_manager")
 ---@type PathMath
 local PathMath = require("path_math")
 
+---@param rate number
+---@return number
+local function sampleExponential(rate)
+  local u = love.math.random()
+  if u <= 0 then
+    u = 1e-12
+  end
+  return -math.log(u) / rate
+end
+
+---@param value number
+---@param min number
+---@param max number
+---@return number
+local function clamp(value, min, max)
+  return math.max(min, math.min(value, max))
+end
+
+---@param a number
+---@param b number
+---@param t number
+---@return number
+local function lerp(a, b, t)
+  return a + (b - a) * t
+end
+
 ---@type GameState
 local state
 
@@ -69,18 +95,28 @@ function love.load()
   state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
 
   state.mobs = {}
-  state:addMob(Mob.new({ radius = 0.75, speed = 0.015, health = 200, damage = 50, spawnTime = 0 }))
-  state:addMob(Mob.new({ radius = 0.50, speed = 0.020, health = 50, damage = 20, spawnTime = 1 }))
-  state:addMob(Mob.new({ radius = 0.50, speed = 0.025, health = 25, damage = 20, spawnTime = 2 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.030, health = 1, damage = 10, spawnTime = 3 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.031, health = 1, damage = 10, spawnTime = 4 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.032, health = 1, damage = 10, spawnTime = 5 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.033, health = 1, damage = 10, spawnTime = 6 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.034, health = 1, damage = 10, spawnTime = 7 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.035, health = 1, damage = 10, spawnTime = 8 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.036, health = 1, damage = 10, spawnTime = 9 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.037, health = 1, damage = 10, spawnTime = 10 }))
-  state:addMob(Mob.new({ radius = 0.20, speed = 0.038, health = 1, damage = 10, spawnTime = 11 }))
+  local mobCount = 12
+  local spawnRate = 2
+  local spawnTime = 0
+  local radiusMin = 0.2
+  local radiusMax = 1
+  local radiusBias = 4 -- Higher values bias towards smaller radius
+  for _ = 1, mobCount do
+    spawnTime = spawnTime + sampleExponential(spawnRate)
+    local u = love.math.random()
+    local radius = radiusMin + (radiusMax - radiusMin) * (u ^ radiusBias)
+    local speedT = clamp((radius - 0.1) / 0.9, 0, 1)
+    local speed = lerp(0.04, 0.01, speedT)
+    local health = 100 * radius
+    local damage = health / 2
+    state:addMob(Mob.new({
+      radius = radius,
+      speed = speed,
+      health = health,
+      damage = damage,
+      spawnTime = spawnTime,
+    }))
+  end
 
   objectManager = InteractableObjectManager.new()
   menuManager = MenuManager.new(objectManager, state)
