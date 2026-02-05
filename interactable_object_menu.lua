@@ -51,9 +51,8 @@ function InteractableObjectMenu:setRegion(x, y, width, height)
   self.regionHeight = height
 end
 
----@param self InteractableObjectMenu
 ---@return number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil
-local function getMenuLayout(self)
+function InteractableObjectMenu:getMenuLayout()
   local count = #self.objects
   if count == 0 then
     return nil
@@ -85,7 +84,7 @@ end
 
 ---@return number|nil, number|nil, number|nil, number|nil
 function InteractableObjectMenu:getBounds()
-  local x, y, width, height = getMenuLayout(self)
+  local x, y, width, height = self:getMenuLayout()
   return x, y, width, height
 end
 
@@ -108,7 +107,7 @@ function InteractableObjectMenu:getObjectAtPoint(x, y)
   if count == 0 then
     return nil
   end
-  local startX, startY, width, height, columns, rows, boxSize, spacing = getMenuLayout(self)
+  local startX, startY, width, height, columns, rows, boxSize, spacing = self:getMenuLayout()
   if startX == nil then
     return nil
   end
@@ -136,7 +135,7 @@ end
 
 ---@param activeObject InteractableObject|nil
 function InteractableObjectMenu:draw(activeObject)
-  local startX, startY, _, _, columns, _, boxSize, spacing = getMenuLayout(self)
+  local startX, startY, _, _, columns, _, boxSize, spacing = self:getMenuLayout()
   if startX == nil then
     return
   end
