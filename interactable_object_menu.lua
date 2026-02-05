@@ -3,6 +3,7 @@
 ---@field spacing? number
 ---@field marginLeft? number
 ---@field marginBottom? number
+---@field marginTop? number
 ---@field previewScale? number
 ---@field cornerRadius? number
 
@@ -12,6 +13,7 @@
 ---@field spacing number
 ---@field marginLeft number
 ---@field marginBottom number
+---@field marginTop number
 ---@field previewScale number
 ---@field cornerRadius number
 local InteractableObjectMenu = {}
@@ -28,6 +30,7 @@ function InteractableObjectMenu.new(objects, options)
 	self.spacing = settings.spacing or 24
 	self.marginLeft = settings.marginLeft or 16
 	self.marginBottom = settings.marginBottom or 16
+	self.marginTop = settings.marginTop or 16
 	self.previewScale = settings.previewScale or 0.35
 	self.cornerRadius = settings.cornerRadius or 6
 	return self
@@ -39,12 +42,16 @@ function InteractableObjectMenu:getBounds()
 	if count == 0 then
 		return nil
 	end
+	local columns = math.min(2, count)
+	local rows = math.ceil(count / columns)
 	local boxSize = self.boxSize
 	local spacing = self.spacing
-	local width = (count * boxSize) + ((count - 1) * spacing)
-	local height = boxSize
-	local x = self.marginLeft
-	local y = love.graphics.getHeight() - self.marginBottom - boxSize
+	local width = (columns * boxSize) + ((columns - 1) * spacing)
+	local height = (rows * boxSize) + ((rows - 1) * spacing)
+	local gridWidth = love.graphics.getWidth() * 12 / 16
+	local panelWidth = love.graphics.getWidth() - gridWidth
+	local x = gridWidth + math.max(0, (panelWidth - width) / 2)
+	local y = self.marginTop
 	return x, y, width, height
 end
 
@@ -68,20 +75,33 @@ function InteractableObjectMenu:getObjectAtPoint(x, y)
 	if count == 0 then
 		return nil
 	end
+	local columns = math.min(2, count)
+	local rows = math.ceil(count / columns)
 	local boxSize = self.boxSize
 	local spacing = self.spacing
-	local startX = self.marginLeft
-	local startY = love.graphics.getHeight() - self.marginBottom - boxSize
-	if x < startX or y < startY or y > startY + boxSize then
+	local gridWidth = love.graphics.getWidth() * 12 / 16
+	local panelWidth = love.graphics.getWidth() - gridWidth
+	local startX = gridWidth + math.max(0, (panelWidth - ((columns * boxSize) + ((columns - 1) * spacing))) / 2)
+	local startY = self.marginTop
+	local width = (columns * boxSize) + ((columns - 1) * spacing)
+	local height = (rows * boxSize) + ((rows - 1) * spacing)
+	if x < startX or x > startX + width or y < startY or y > startY + height then
 		return nil
 	end
-	local step = boxSize + spacing
-	local index = math.floor((x - startX) / step) + 1
-	if index < 1 or index > count then
+	local stepX = boxSize + spacing
+	local stepY = boxSize + spacing
+	local columnIndex = math.floor((x - startX) / stepX) + 1
+	local rowIndex = math.floor((y - startY) / stepY) + 1
+	if columnIndex < 1 or columnIndex > columns or rowIndex < 1 or rowIndex > rows then
 		return nil
 	end
-	local boxX = startX + (index - 1) * step
-	if x > boxX + boxSize then
+	local boxX = startX + (columnIndex - 1) * stepX
+	local boxY = startY + (rowIndex - 1) * stepY
+	if x > boxX + boxSize or y > boxY + boxSize then
+		return nil
+	end
+	local index = (rowIndex - 1) * columns + columnIndex
+	if index > count then
 		return nil
 	end
 	return self.objects[index]
@@ -93,15 +113,20 @@ function InteractableObjectMenu:draw(activeObject)
 	if count == 0 then
 		return
 	end
+	local columns = math.min(2, count)
 	local boxSize = self.boxSize
 	local spacing = self.spacing
-	local startX = self.marginLeft
-	local startY = love.graphics.getHeight() - self.marginBottom - boxSize
+	local gridWidth = love.graphics.getWidth() * 12 / 16
+	local panelWidth = love.graphics.getWidth() - gridWidth
+	local startX = gridWidth + math.max(0, (panelWidth - ((columns * boxSize) + ((columns - 1) * spacing))) / 2)
+	local startY = self.marginTop
 	local radius = self.cornerRadius
 
 	for index, object in ipairs(self.objects) do
-		local boxX = startX + (index - 1) * (boxSize + spacing)
-		local boxY = startY
+		local row = math.floor((index - 1) / columns)
+		local column = (index - 1) % columns
+		local boxX = startX + column * (boxSize + spacing)
+		local boxY = startY + row * (boxSize + spacing)
 		local isActive = object == activeObject
 		love.graphics.setColor(0.06, 0.08, 0.12, 0.6)
 		love.graphics.rectangle("fill", boxX, boxY, boxSize, boxSize, radius, radius)

@@ -75,8 +75,24 @@ end
 
 function InteractableObjectManager:draw()
 	self:drawMenu()
-	local centerX = love.graphics.getWidth() * 0.78
-	local centerY = love.graphics.getHeight() * 0.78
+	local screenWidth = love.graphics.getWidth()
+	local screenHeight = love.graphics.getHeight()
+	local gridWidth = screenWidth * 12 / 16
+	local panelWidth = screenWidth - gridWidth
+	local centerX = gridWidth + (panelWidth / 2)
+	local centerY = screenHeight * 0.78
+	if self.menu then
+		local _, menuY, _, menuHeight = self.menu:getBounds()
+		if menuY ~= nil then
+			local spacing = self.menu.spacing or 0
+			local remaining = screenHeight - (menuY + menuHeight + spacing)
+			if remaining > 0 then
+				centerY = menuY + menuHeight + spacing + (remaining / 2)
+			else
+				centerY = menuY + menuHeight + spacing
+			end
+		end
+	end
 	self:drawActive(centerX, centerY)
 end
 
