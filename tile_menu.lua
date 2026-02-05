@@ -7,6 +7,7 @@
 ---@field bgColorG number
 ---@field bgColorB number
 ---@field bgColorA number
+---@field menuManager MenuManager
 ---@field state GameState
 ---@field buttons Button[]
 local TileMenu = {}
