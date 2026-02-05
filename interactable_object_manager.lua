@@ -74,10 +74,10 @@ function InteractableObjectManager:drawMenu()
 end
 
 function InteractableObjectManager:draw()
-	self:drawMenu()
 	local screenWidth = love.graphics.getWidth()
 	local screenHeight = love.graphics.getHeight()
 	local gridWidth = screenWidth * 12 / 16
+	self:drawMenu()
 	local panelWidth = screenWidth - gridWidth
 	local centerX = gridWidth + (panelWidth / 2)
 	local centerY = screenHeight * 0.78
@@ -94,6 +94,16 @@ function InteractableObjectManager:draw()
 		end
 	end
 	self:drawActive(centerX, centerY)
+end
+
+---@param x number
+---@param y number
+---@param width number
+---@param height number
+function InteractableObjectManager:setMenuRegion(x, y, width, height)
+	if self.menu then
+		self.menu:setRegion(x, y, width, height)
+	end
 end
 
 ---@param x number

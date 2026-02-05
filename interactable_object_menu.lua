@@ -16,6 +16,10 @@
 ---@field marginTop number
 ---@field previewScale number
 ---@field cornerRadius number
+---@field regionX number|nil
+---@field regionY number|nil
+---@field regionWidth number|nil
+---@field regionHeight number|nil
 local InteractableObjectMenu = {}
 InteractableObjectMenu.__index = InteractableObjectMenu
 
@@ -36,6 +40,17 @@ function InteractableObjectMenu.new(objects, options)
 	return self
 end
 
+---@param x number
+---@param y number
+---@param width number
+---@param height number
+function InteractableObjectMenu:setRegion(x, y, width, height)
+	self.regionX = x
+	self.regionY = y
+	self.regionWidth = width
+	self.regionHeight = height
+end
+
 ---@param self InteractableObjectMenu
 ---@return number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil
 local function getMenuLayout(self)
@@ -51,12 +66,20 @@ local function getMenuLayout(self)
 	local height = (rows * boxSize) + ((rows - 1) * spacing)
 	local screenWidth = love.graphics.getWidth()
 	local screenHeight = love.graphics.getHeight()
-	local gridWidth = screenWidth * 12 / 16
-	local panelWidth = screenWidth - gridWidth
-	local startX = gridWidth + math.max(0, (panelWidth - width) / 2)
-	local menuRegionY = screenHeight / 3
-	local menuRegionHeight = screenHeight * 2 / 3
-	local startY = menuRegionY + self.marginTop
+	local regionX = self.regionX
+	local regionY = self.regionY
+	local regionWidth = self.regionWidth
+	local regionHeight = self.regionHeight
+	if regionX == nil or regionY == nil or regionWidth == nil or regionHeight == nil then
+		local gridWidth = screenWidth * 12 / 16
+		local panelWidth = screenWidth - gridWidth
+		regionX = gridWidth
+		regionY = 0
+		regionWidth = panelWidth
+		regionHeight = screenHeight
+	end
+	local startX = regionX + math.max(0, (regionWidth - width) / 2)
+	local startY = regionY + self.marginTop
 	return startX, startY, width, height, columns, rows, boxSize, spacing
 end
 
@@ -117,6 +140,14 @@ function InteractableObjectMenu:draw(activeObject)
 	local startX, startY, _, _, columns, _, boxSize, spacing = getMenuLayout(self)
 	if startX == nil then
 		return
+	end
+	local regionX = self.regionX
+	local regionY = self.regionY
+	local regionWidth = self.regionWidth
+	local regionHeight = self.regionHeight
+	if regionX ~= nil and regionY ~= nil and regionWidth ~= nil and regionHeight ~= nil then
+		love.graphics.setColor(0, 0.5, 0, 1)
+		love.graphics.rectangle("fill", regionX, regionY, regionWidth, regionHeight)
 	end
 	local radius = self.cornerRadius
 

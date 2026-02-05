@@ -4,6 +4,10 @@ local cellMath = require("cell_math")
 local Tower = require("tower")
 ---@type Mob
 local Mob = require("mob")
+---@type MenuManager
+local MenuManager = require("menu_manager")
+---@type TileMenu
+local TileMenu = require("tile_menu")
 ---@type Clock
 local Clock = require("clock")
 ---@type InteractableObjectManager
@@ -25,6 +29,10 @@ local state = {
 
 ---@type InteractableObjectManager
 local objectManager
+---@type MenuManager
+local menuManager
+---@type TileMenu
+local tileMenu
 ---@type Clock[]
 local clocks
 
@@ -85,6 +93,13 @@ function love.load()
 	}
 
 	objectManager = InteractableObjectManager.new()
+	menuManager = MenuManager.new(objectManager)
+	menuManager.menuStartX = 0
+	menuManager.menuEndX = 1
+	menuManager.menuStartY = 1 / 3
+	menuManager.menuEndY = 1
+	tileMenu = TileMenu.new(menuManager, 12 / 16, 1, 1 / 3, 1)
+	menuManager:setTileMenu(tileMenu)
 	---@type number
 	local centerX = gridWidth / 2
 	---@type number
@@ -157,9 +172,6 @@ function love.draw()
 	-- Grid background
 	love.graphics.setColor(0.05, 0.08, 0.2, 1)
 	love.graphics.rectangle("fill", 0, 0, gridWidth, height)
-	-- Panel background
-	love.graphics.setColor(0.2, 0.13, 0.07, 1)
-	love.graphics.rectangle("fill", gridWidth, 0, width - gridWidth, height)
 	-- Grid lines
 	love.graphics.setLineWidth(1)
 	love.graphics.setColor(0.5, 0.5, 0.5)
@@ -187,10 +199,7 @@ function love.draw()
 	for _, mob in ipairs(mobs) do
 		mob:draw(path, grid)
 	end
-
-	-- UI overlay
-	love.graphics.setColor(1, 1, 1, 1)
-	objectManager:draw()
+	menuManager:draw()
 
 	-- Outline
 	love.graphics.setLineWidth(2)
@@ -200,11 +209,31 @@ end
 
 ---@param x number
 ---@param y number
+---@return boolean
+local function isMenuClick(x, y)
+	local gridWidth = state.width * 12 / 16
+	return x >= gridWidth and y >= 0 and y <= state.height
+end
+
+---@param x number
+---@param y number
 ---@param button number
 ---@param isTouch boolean
 ---@param presses number
 function love.mousepressed(x, y, button, isTouch, presses)
-	objectManager:onClick(x, y, button, isTouch, presses)
+	if isMenuClick(x, y) then
+		menuManager:onClick(x, y, button, isTouch, presses)
+	else
+		local cellSize = state.grid.cellSize
+		local maxGridWidth = state.grid.numCellsX * cellSize
+		local maxGridHeight = state.grid.numCellsY * cellSize
+		if x < 0 or y < 0 or y > maxGridHeight or x > maxGridWidth then
+			return
+		end
+		local cellX = math.floor(x / cellSize)
+		local cellY = math.floor(y / cellSize)
+		menuManager:setSelectedTile(cellX, cellY)
+	end
 end
 
 ---@param dx number
@@ -212,5 +241,5 @@ end
 function love.wheelmoved(dx, dy)
 	---@type number, number
 	local mouseX, mouseY = love.mouse.getPosition()
-	objectManager:onScroll(dx, dy, mouseX, mouseY)
+	menuManager:onScroll(dx, dy, mouseX, mouseY)
 end

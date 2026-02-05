@@ -66,6 +66,10 @@
 ---@field marginTop number
 ---@field previewScale number
 ---@field cornerRadius number
+---@field regionX number|nil
+---@field regionY number|nil
+---@field regionWidth number|nil
+---@field regionHeight number|nil
 
 ---@class InteractableObjectManager
 ---@field objects InteractableObject[]
@@ -90,3 +94,28 @@
 ---@field hour number
 ---@field minute number
 ---@field seconds number
+
+---@class MenuManager
+---@field panelColorR number
+---@field panelColorG number
+---@field panelColorB number
+---@field panelColorA number
+---@field objectManager InteractableObjectManager
+---@field tileMenu TileMenu|nil
+---@field menuStartX number
+---@field menuEndX number
+---@field menuStartY number
+---@field menuEndY number
+---@field selectedTile Vec2
+---@field isTileSelected boolean
+
+---@class TileMenu
+---@field minX number
+---@field maxX number
+---@field minY number
+---@field maxY number
+---@field bgColorR number
+---@field bgColorG number
+---@field bgColorB number
+---@field bgColorA number
+---@field menuManager MenuManager
