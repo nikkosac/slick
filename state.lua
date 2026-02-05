@@ -97,6 +97,16 @@ function GameState:draw()
 			love.graphics.rectangle("line", x * cellSize, y * cellSize, cellSize, cellSize)
 		end
 	end
+	if self.isTileSelected then
+		local tileX = self.selectedTile.x
+		local tileY = self.selectedTile.y
+		if tileX >= 0 and tileX < grid.numCellsX and tileY >= 0 and tileY < grid.numCellsY then
+			love.graphics.setLineWidth(3)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.rectangle("line", tileX * cellSize, tileY * cellSize, cellSize, cellSize)
+			love.graphics.setLineWidth(1)
+		end
+	end
 
 	-- Path
 	love.graphics.setLineWidth(1)
