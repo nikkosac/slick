@@ -19,6 +19,34 @@ GameState.__index = GameState
 
 ---@type CellMath
 local cellMath = require("cell_math")
+---@type Mob
+local Mob = require("mob")
+
+---@param rate number
+---@return number
+local function sampleExponential(rate)
+  local u = love.math.random()
+  if u <= 0 then
+    u = 1e-12
+  end
+  return -math.log(u) / rate
+end
+
+---@param value number
+---@param min number
+---@param max number
+---@return number
+local function clamp(value, min, max)
+  return math.max(min, math.min(value, max))
+end
+
+---@param a number
+---@param b number
+---@param t number
+---@return number
+local function lerp(a, b, t)
+  return a + (b - a) * t
+end
 
 ---@param config { path: Path }
 ---@return GameState
@@ -70,6 +98,62 @@ end
 ---@param mob Mob
 function GameState:addMob(mob)
   table.insert(self.mobs, mob)
+end
+
+---@param opts? table
+function GameState:generateMobs(opts)
+  -- opts.mobCount: number of mobs to generate
+  -- opts.spawnRate: exponential rate (lambda) in spawns per second
+  -- opts.radiusMin/radiusMax: clamp range for radius
+  -- opts.radiusBias: power-law exponent; >1 makes large radii rarer
+  -- opts.healthPerRadius: health = radius * value
+  -- opts.damageScale: damage = health * value
+  -- opts.speedAtMinRadius: speed at speedRadiusMin
+  -- opts.speedAtMaxRadius: speed at speedRadiusMax
+  -- opts.speedRadiusMin/speedRadiusMax: radius range mapped to the speed lerp
+  opts = opts or {}
+  self.mobs = {}
+  local mobCount = opts.mobCount or 12
+  local spawnRate = opts.spawnRate or 2
+  local radiusMin = opts.radiusMin or 0.2
+  local radiusMax = opts.radiusMax or 1
+  local radiusBias = opts.radiusBias or 2
+  local healthPerRadius = opts.healthPerRadius or 100
+  local damageScale = opts.damageScale or 0.5
+  local speedAtMinRadius = opts.speedAtMinRadius or 0.04
+  local speedAtMaxRadius = opts.speedAtMaxRadius or 0.01
+  local speedRadiusMin = opts.speedRadiusMin or 0.1
+  local speedRadiusMax = opts.speedRadiusMax or 1
+
+  spawnRate = math.max(spawnRate, 1e-6)
+  local spawnTime = 0
+  local radiusSpan = radiusMax - radiusMin
+  local speedRadiusSpan = speedRadiusMax - speedRadiusMin
+  local clampMin = math.min(radiusMin, radiusMax)
+  local clampMax = math.max(radiusMin, radiusMax)
+
+  for _ = 1, mobCount do
+    spawnTime = spawnTime + sampleExponential(spawnRate)
+    local u = love.math.random()
+    local radius = radiusMin + radiusSpan * (u ^ radiusBias)
+    radius = clamp(radius, clampMin, clampMax)
+    local speedT = 0
+    if speedRadiusSpan ~= 0 then
+      speedT = clamp((radius - speedRadiusMin) / speedRadiusSpan, 0, 1)
+    elseif radius >= speedRadiusMax then
+      speedT = 1
+    end
+    local speed = lerp(speedAtMinRadius, speedAtMaxRadius, speedT)
+    local health = healthPerRadius * radius
+    local damage = health * damageScale
+    self:addMob(Mob.new({
+      radius = radius,
+      speed = speed,
+      health = health,
+      damage = damage,
+      spawnTime = spawnTime,
+    }))
+  end
 end
 
 ---@param dt number

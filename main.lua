@@ -1,7 +1,5 @@
 ---@type Tower
 local Tower = require("tower")
----@type Mob
-local Mob = require("mob")
 ---@type GameState
 local GameState = require("state")
 ---@type MenuManager
@@ -14,32 +12,6 @@ local Clock = require("clock")
 local InteractableObjectManager = require("interactable_object_manager")
 ---@type PathMath
 local PathMath = require("path_math")
-
----@param rate number
----@return number
-local function sampleExponential(rate)
-  local u = love.math.random()
-  if u <= 0 then
-    u = 1e-12
-  end
-  return -math.log(u) / rate
-end
-
----@param value number
----@param min number
----@param max number
----@return number
-local function clamp(value, min, max)
-  return math.max(min, math.min(value, max))
-end
-
----@param a number
----@param b number
----@param t number
----@return number
-local function lerp(a, b, t)
-  return a + (b - a) * t
-end
 
 ---@type GameState
 local state
@@ -94,29 +66,14 @@ function love.load()
   state:addTower(Tower.new({ pos = { x = 11, y = 16 }, range = 3, cooldown = 0.75 }))
   state:addTower(Tower.new({ pos = { x = 9, y = 16 }, range = 3, cooldown = 0.75 }))
 
-  state.mobs = {}
-  local mobCount = 12
-  local spawnRate = 2
-  local spawnTime = 0
-  local radiusMin = 0.2
-  local radiusMax = 1
-  local radiusBias = 4 -- Higher values bias towards smaller radius
-  for _ = 1, mobCount do
-    spawnTime = spawnTime + sampleExponential(spawnRate)
-    local u = love.math.random()
-    local radius = radiusMin + (radiusMax - radiusMin) * (u ^ radiusBias)
-    local speedT = clamp((radius - 0.1) / 0.9, 0, 1)
-    local speed = lerp(0.04, 0.01, speedT)
-    local health = 100 * radius
-    local damage = health / 2
-    state:addMob(Mob.new({
-      radius = radius,
-      speed = speed,
-      health = health,
-      damage = damage,
-      spawnTime = spawnTime,
-    }))
-  end
+  state:generateMobs({
+    mobCount = 12,
+    spawnRate = 2,
+    radiusMin = 0.2,
+    radiusMax = 1,
+    radiusBias = 4,
+    healthPerRadius = 50,
+  })
 
   objectManager = InteractableObjectManager.new()
   menuManager = MenuManager.new(objectManager, state)
