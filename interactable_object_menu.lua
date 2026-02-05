@@ -36,8 +36,9 @@ function InteractableObjectMenu.new(objects, options)
 	return self
 end
 
----@return number|nil, number|nil, number|nil, number|nil
-function InteractableObjectMenu:getBounds()
+---@param self InteractableObjectMenu
+---@return number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil, number|nil
+local function getMenuLayout(self)
 	local count = #self.objects
 	if count == 0 then
 		return nil
@@ -48,10 +49,20 @@ function InteractableObjectMenu:getBounds()
 	local spacing = self.spacing
 	local width = (columns * boxSize) + ((columns - 1) * spacing)
 	local height = (rows * boxSize) + ((rows - 1) * spacing)
-	local gridWidth = love.graphics.getWidth() * 12 / 16
-	local panelWidth = love.graphics.getWidth() - gridWidth
-	local x = gridWidth + math.max(0, (panelWidth - width) / 2)
-	local y = self.marginTop
+	local screenWidth = love.graphics.getWidth()
+	local screenHeight = love.graphics.getHeight()
+	local gridWidth = screenWidth * 12 / 16
+	local panelWidth = screenWidth - gridWidth
+	local startX = gridWidth + math.max(0, (panelWidth - width) / 2)
+	local menuRegionY = screenHeight / 3
+	local menuRegionHeight = screenHeight * 2 / 3
+	local startY = menuRegionY + self.marginTop
+	return startX, startY, width, height, columns, rows, boxSize, spacing
+end
+
+---@return number|nil, number|nil, number|nil, number|nil
+function InteractableObjectMenu:getBounds()
+	local x, y, width, height = getMenuLayout(self)
 	return x, y, width, height
 end
 
@@ -75,16 +86,10 @@ function InteractableObjectMenu:getObjectAtPoint(x, y)
 	if count == 0 then
 		return nil
 	end
-	local columns = math.min(2, count)
-	local rows = math.ceil(count / columns)
-	local boxSize = self.boxSize
-	local spacing = self.spacing
-	local gridWidth = love.graphics.getWidth() * 12 / 16
-	local panelWidth = love.graphics.getWidth() - gridWidth
-	local startX = gridWidth + math.max(0, (panelWidth - ((columns * boxSize) + ((columns - 1) * spacing))) / 2)
-	local startY = self.marginTop
-	local width = (columns * boxSize) + ((columns - 1) * spacing)
-	local height = (rows * boxSize) + ((rows - 1) * spacing)
+	local startX, startY, width, height, columns, rows, boxSize, spacing = getMenuLayout(self)
+	if startX == nil then
+		return nil
+	end
 	if x < startX or x > startX + width or y < startY or y > startY + height then
 		return nil
 	end
@@ -109,17 +114,10 @@ end
 
 ---@param activeObject InteractableObject|nil
 function InteractableObjectMenu:draw(activeObject)
-	local count = #self.objects
-	if count == 0 then
+	local startX, startY, _, _, columns, _, boxSize, spacing = getMenuLayout(self)
+	if startX == nil then
 		return
 	end
-	local columns = math.min(2, count)
-	local boxSize = self.boxSize
-	local spacing = self.spacing
-	local gridWidth = love.graphics.getWidth() * 12 / 16
-	local panelWidth = love.graphics.getWidth() - gridWidth
-	local startX = gridWidth + math.max(0, (panelWidth - ((columns * boxSize) + ((columns - 1) * spacing))) / 2)
-	local startY = self.marginTop
 	local radius = self.cornerRadius
 
 	for index, object in ipairs(self.objects) do

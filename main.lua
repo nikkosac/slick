@@ -95,15 +95,11 @@ function love.load()
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
 		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
-		Clock.new({ x = centerX, y = centerY, scale = 0.1 }),
 	}
 	clocks[1]:setTime(1, 0, 0)
 	clocks[2]:setTime(4, 30, 0)
 	clocks[3]:setTime(9, 15, 0)
 	clocks[4]:setTime(11, 45, 0)
-	clocks[5]:setTime(2, 20, 0)
-	clocks[6]:setTime(6, 10, 0)
 	for _, clock in ipairs(clocks) do
 		objectManager:add(clock)
 	end
